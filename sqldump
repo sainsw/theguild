@@ -1,0 +1,196 @@
+# ************************************************************
+# Sequel Pro SQL dump
+# Version 4096
+#
+# http://www.sequelpro.com/
+# http://code.google.com/p/sequel-pro/
+#
+# Host: 127.0.0.1 (MySQL 5.6.21)
+# Database: guild
+# Generation Time: 2015-04-05 22:54:31 +0000
+# ************************************************************
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table BookedLocations
+# ------------------------------------------------------------
+
+CREATE TABLE `BookedLocations` (
+  `RID` int(11) unsigned NOT NULL,
+  `EID` int(11) unsigned NOT NULL,
+  `STime` datetime NOT NULL,
+  `ETime` datetime NOT NULL,
+  PRIMARY KEY (`RID`,`EID`),
+  KEY `BookE` (`EID`),
+  CONSTRAINT `BookE` FOREIGN KEY (`EID`) REFERENCES `Event` (`EventID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `BookLoc` FOREIGN KEY (`RID`) REFERENCES `Locations` (`RoomID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Building
+# ------------------------------------------------------------
+
+CREATE TABLE `Building` (
+  `BuildingID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL DEFAULT '',
+  `Address` int(11) NOT NULL,
+  PRIMARY KEY (`BuildingID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table ClubMember
+# ------------------------------------------------------------
+
+CREATE TABLE `ClubMember` (
+  `SID` int(11) unsigned NOT NULL,
+  `CID` int(11) unsigned NOT NULL,
+  `Position` varchar(255) DEFAULT NULL,
+  `Rep` tinyint(1) NOT NULL,
+  PRIMARY KEY (`SID`,`CID`),
+  KEY `CMem` (`CID`),
+  CONSTRAINT `CMem` FOREIGN KEY (`CID`) REFERENCES `Club` (`ClubID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `SMem` FOREIGN KEY (`SID`) REFERENCES `Student` (`StudentID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Event
+# ------------------------------------------------------------
+
+CREATE TABLE `Event` (
+  `EventID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `Title` varchar(255) NOT NULL DEFAULT '',
+  `STime` datetime NOT NULL,
+  `ETime` datetime NOT NULL,
+  `Creator` int(11) unsigned DEFAULT NULL,
+  `Capacity` int(11) DEFAULT NULL,
+  `CID` int(11) unsigned NOT NULL,
+  `RID` int(11) unsigned DEFAULT NULL,
+  `Type` int(11) NOT NULL,
+  `Approval` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`EventID`),
+  UNIQUE KEY `Title` (`Title`),
+  KEY `CreatorID` (`Creator`),
+  KEY `ClubE` (`CID`),
+  KEY `Approval` (`Approval`),
+  KEY `Location` (`RID`),
+  CONSTRAINT `Approval` FOREIGN KEY (`Approval`) REFERENCES `Staff` (`StaffID`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `ClubE` FOREIGN KEY (`CID`) REFERENCES `Club` (`ClubID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `CreatorID` FOREIGN KEY (`Creator`) REFERENCES `Student` (`StudentID`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `Location` FOREIGN KEY (`RID`) REFERENCES `Locations` (`RoomID`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Locations
+# ------------------------------------------------------------
+
+CREATE TABLE `Locations` (
+  `RoomID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `RoomNo` varchar(255) NOT NULL DEFAULT '',
+  `Building` int(11) unsigned NOT NULL,
+  `Capacity` int(11) DEFAULT NULL,
+  PRIMARY KEY (`RoomID`),
+  KEY `BuildingID` (`Building`),
+  CONSTRAINT `BuildingID` FOREIGN KEY (`Building`) REFERENCES `Building` (`BuildingID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table PublicAttending
+# ------------------------------------------------------------
+
+CREATE TABLE `PublicAttending` (
+  `BookingID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `EID` int(10) unsigned NOT NULL,
+  `FName` varchar(255) NOT NULL DEFAULT '',
+  `LName` varchar(255) NOT NULL DEFAULT '',
+  `Email` varchar(255) DEFAULT '',
+  `Telephone` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`BookingID`),
+  KEY `PEBook` (`EID`),
+  CONSTRAINT `PEBook` FOREIGN KEY (`EID`) REFERENCES `Event` (`EventID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Student
+# ------------------------------------------------------------
+
+CREATE TABLE `Student` (
+  `StudentID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `FName` varchar(255) NOT NULL DEFAULT '',
+  `LName` varchar(255) NOT NULL DEFAULT '',
+  `Gender` char(1) DEFAULT '',
+  `Email` varchar(255) NOT NULL DEFAULT '',
+  `Pass` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`StudentID`),
+  UNIQUE KEY `Email` (`Email`,`Pass`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Club
+# ------------------------------------------------------------
+
+CREATE TABLE `Club` (
+  `ClubID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `Title` varchar(255) NOT NULL DEFAULT '',
+  `Class` varchar(255) NOT NULL DEFAULT '',
+  `Leader` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`ClubID`),
+  UNIQUE KEY `Title` (`Title`),
+  KEY `LeaderID` (`Leader`),
+  CONSTRAINT `LeaderID` FOREIGN KEY (`Leader`) REFERENCES `Student` (`StudentID`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table Staff
+# ------------------------------------------------------------
+
+CREATE TABLE `Staff` (
+  `StaffID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `FName` varchar(255) NOT NULL DEFAULT '',
+  `LName` varchar(255) NOT NULL DEFAULT '',
+  `Gender` char(1) DEFAULT '',
+  `Email` varchar(255) NOT NULL DEFAULT '',
+  `Pass` varchar(255) NOT NULL DEFAULT '',
+  `Manager` tinyint(1) NOT NULL,
+  PRIMARY KEY (`StaffID`),
+  UNIQUE KEY `Email` (`Email`,`Pass`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+# Dump of table StudentAttending
+# ------------------------------------------------------------
+
+CREATE TABLE `StudentAttending` (
+  `SID` int(11) unsigned NOT NULL,
+  `EID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`SID`,`EID`),
+  KEY `EventAtt` (`EID`),
+  CONSTRAINT `EventAtt` FOREIGN KEY (`EID`) REFERENCES `Event` (`EventID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `StuAtt` FOREIGN KEY (`SID`) REFERENCES `Student` (`StudentID`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
