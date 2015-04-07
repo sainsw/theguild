@@ -138,24 +138,26 @@ SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+CREATE TABLE `Timeslots` (
+  `SlotNo` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `STime` time NOT NULL,
+  `ETime` time NOT NULL,
+  PRIMARY KEY (`SlotNo`)
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
 
 
-# Dump of table BookedLocations
-# ------------------------------------------------------------
 
 CREATE TABLE `BookedLocations` (
   `RID` int(11) unsigned NOT NULL,
   `EID` int(11) unsigned NOT NULL,
-  `STime` datetime NOT NULL,
-  `ETime` datetime NOT NULL,
+  `TS` int(11) unsigned NOT NULL,
+  `Date` datetime NOT NULL,
   PRIMARY KEY (`RID`,`EID`),
   KEY `BookE` (`EID`),
-  CONSTRAINT `BookE` FOREIGN KEY (`EID`) REFERENCES `Event` (`EventID`) ON DELETE 
-
-CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `BookLoc` FOREIGN KEY (`RID`) REFERENCES `Locations` (`RoomID`) ON DELETE 
-
-CASCADE ON UPDATE CASCADE
+  KEY `BookedTimeslot` (`TS`),
+  CONSTRAINT `BookE` FOREIGN KEY (`EID`) REFERENCES `Event` (`EventID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `BookLoc` FOREIGN KEY (`RID`) REFERENCES `Locations` (`RoomID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `BookedTimeslot` FOREIGN KEY (`TS`) REFERENCES `Timeslots` (`SlotNo`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
