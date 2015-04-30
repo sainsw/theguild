@@ -75,14 +75,14 @@
   createTable('Event', 
               'EventID int(11) unsigned NOT NULL AUTO_INCREMENT,
               Title varchar(255) NOT NULL DEFAULT \'\',
-              STime datetime NOT NULL,
-              ETime datetime NOT NULL,
+              SlotNo int(11) unsigned DEFAULT NULL,
               Creator int(11) unsigned DEFAULT NULL,
               Capacity int(11) DEFAULT NULL,
               CID int(11) unsigned NOT NULL,
               RID int(11) unsigned DEFAULT NULL,
-              Type int(11) NOT NULL,
+              Type varchar(255) NOT NULL,
               Approval int(11) unsigned DEFAULT NULL,
+              Topic varchar(255) NOT NULL,
               PRIMARY KEY (EventID),
               UNIQUE KEY Title (Title),
               KEY CreatorID (Creator),
@@ -96,7 +96,9 @@
               CONSTRAINT CreatorID FOREIGN KEY (Creator) REFERENCES Student (StudentID) 
               ON DELETE SET NULL ON UPDATE CASCADE,
               CONSTRAINT Location FOREIGN KEY (RID) REFERENCES Locations (RoomID) 
-              ON DELETE SET NULL ON UPDATE CASCADE');
+              ON DELETE SET NULL ON UPDATE CASCADE,
+              CONSTRAINT Slot FOREIGN KEY (SlotNo) REFERENCES Timeslots (SlotNo) 
+              ON DELETE CASCADE ON UPDATE CASCADE');
 
 
   createTable('Timeslots', 
